@@ -1,0 +1,68 @@
+---
+/**
+ * Single Page Application Entry Point
+ *
+ * This is the ONLY Astro page in the application.
+ * Everything else is rendered client-side via the App component.
+ *
+ * The App component handles:
+ * - Global initialization (auth, data)
+ * - Client-side routing
+ * - Persistent app shell
+ *
+ * No SSR - the entire app is client-side rendered.
+ */
+import '../styles/global.css';
+import App from '../components/App';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#8b7fc7" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- SEO Meta Tags -->
+    <title>Media Tracker - Track Your Movies & TV Series</title>
+    <meta name="description" content="Track your favorite movies and TV series with TMDB. Browse, organize, and manage your watchlist with this Progressive Web App." />
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Media Tracker - Track Your Movies & TV Series" />
+    <meta property="og:description" content="Track your favorite movies and TV series with TMDB. Browse, organize, and manage your watchlist with this Progressive Web App." />
+
+    <!-- Preconnect to important origins -->
+    <link rel="preconnect" href="https://image.tmdb.org" />
+    <link rel="preconnect" href="https://api.themoviedb.org" />
+  </head>
+  <body>
+    <!--
+      The entire application is rendered here via the App component.
+
+      client:only="preact" ensures:
+      - No SSR (Server-Side Rendering)
+      - Client-side only rendering
+      - App mounts once and never unmounts
+      - All routing is client-side
+
+      The App component will show a loading screen until:
+      - Auth is resolved
+      - Data is hydrated
+      - App is initialized
+
+      Then it renders the AppShell with the router.
+    -->
+    <App client:only="preact" />
+
+    <!-- Portal root for modals -->
+    <div id="portal-root"></div>
+  </body>
+</html>

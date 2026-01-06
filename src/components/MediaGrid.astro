@@ -1,0 +1,99 @@
+---
+import MediaCard from './MediaCard.astro';
+import type { TMDBMovie, TMDBTVSeries } from '../types/Media';
+import { getItemStatus } from '../store/mediaStore';
+
+interface Props {
+  items: (TMDBMovie | TMDBTVSeries)[];
+  mediaType: 'movie' | 'tv';
+  title?: string;
+  emptyMessage?: string;
+  loading?: boolean;
+}
+
+const {
+  items,
+  mediaType,
+  title,
+  emptyMessage = 'No items found.',
+  loading = false
+} = Astro.props;
+
+// Helper to get year from either movie or TV series
+function getYear(item: TMDBMovie | TMDBTVSeries): string {
+  if ('release_date' in item) {
+    return item.release_date?.split('-')[0] || 'N/A';
+  } else if ('first_air_date' in item) {
+    return item.first_air_date?.split('-')[0] || 'N/A';
+  }
+  return 'N/A';
+}
+
+// Helper to get title from either movie or TV series
+function getTitle(item: TMDBMovie | TMDBTVSeries): string {
+  return 'title' in item ? item.title : item.name;
+}
+---
+
+<section class="media-grid-section" aria-labelledby={title ? 'grid-title' : undefined}>
+  {title && (
+    <h2 id="grid-title" class="text-3xl font-bold text-gray-900 mb-6">
+      {title}
+    </h2>
+  )}
+
+  {loading ? (
+    <!-- Loading State -->
+    <div class="flex items-center justify-center py-20" role="status" aria-live="polite">
+      <div class="text-center">
+        <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent" aria-hidden="true"></div>
+        <p class="mt-4 text-gray-600 text-lg">Loading...</p>
+      </div>
+    </div>
+  ) : items.length === 0 ? (
+    <!-- Empty State -->
+    <div class="text-center py-20 bg-gray-50 rounded-xl" role="status" aria-live="polite">
+      <div class="text-6xl mb-4" aria-hidden="true">🎬</div>
+      <p class="text-gray-600 text-lg">{emptyMessage}</p>
+    </div>
+  ) : (
+    <!-- Grid -->
+    <div
+      class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6"
+      role="list"
+    >
+      {items.map((item) => {
+        const currentStatus = getItemStatus(item.id, mediaType);
+        return (
+          <div role="listitem">
+            <MediaCard
+              tmdbId={item.id}
+              title={getTitle(item)}
+              posterPath={item.poster_path}
+              releaseYear={getYear(item)}
+              rating={item.vote_average}
+              mediaType={mediaType}
+              currentStatus={currentStatus}
+            />
+          </div>
+        );
+      })}
+    </div>
+  )}
+</section>
+
+<style>
+  .media-grid-section {
+    margin-bottom: 3rem;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .animate-spin {
+    animation: spin 1s linear infinite;
+  }
+</style>
