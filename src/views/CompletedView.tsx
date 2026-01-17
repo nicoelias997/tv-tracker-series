@@ -44,7 +44,18 @@ export default function CompletedView() {
             TMDB API
           </a>
         </p>
-        <p className="mt-2">Built with Astro, Preact & Tailwind CSS</p>
+        <p className="mt-2">
+          Built by{' '}
+          <a
+            href="https://chipper-puffpuff-ffcd43.netlify.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:underline"
+            style={{ color: 'var(--color-primary)' }}
+          >
+            Nico
+          </a>
+        </p>
       </footer>
     </main>
   );
